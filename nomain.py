@@ -20,7 +20,7 @@ class ArbolBinarioBusqueda:
                 nodo_actual.izquierda = Nodo(datos)
             else:
                 self._insertar_recursivo(datos, nodo_actual.izquierda)
-        elif datos['k'] >= nodo_actual.datos['k']:
+        elif datos['k'] > nodo_actual.datos['k']:
             if nodo_actual.derecha is None:
                 nodo_actual.derecha = Nodo(datos)
             else:
@@ -42,24 +42,23 @@ class ArbolBinarioBusqueda:
         while nodo.izquierda:
             nodo = nodo.izquierda
         return nodo
-    
+
     def encontrar_maximo(self, nodo):
         while nodo.derecha:
             nodo = nodo.derecha
         return nodo
 
     def eliminar_por_identificacion(self, identificacion):
-        clave_a_eliminar = sum(int(digito) for digito in str(identificacion) if digito.isdigit())
-        self.raiz = self._eliminar_recursivo_por_clave(self.raiz, clave_a_eliminar)
+        self.raiz = self._eliminar_recursivo_por_identificacion(self.raiz, identificacion)
 
-    def _eliminar_recursivo_por_clave(self, nodo_actual, clave):
+    def _eliminar_recursivo_por_identificacion(self, nodo_actual, identificacion):
         if not nodo_actual:
             return nodo_actual
 
-        if clave < nodo_actual.datos['k']:
-            nodo_actual.izquierda = self._eliminar_recursivo_por_clave(nodo_actual.izquierda, clave)
-        elif clave > nodo_actual.datos['k']:
-            nodo_actual.derecha = self._eliminar_recursivo_por_clave(nodo_actual.derecha, clave)
+        if identificacion < nodo_actual.datos['identificacion']:
+            nodo_actual.izquierda = self._eliminar_recursivo_por_identificacion(nodo_actual.izquierda, identificacion)
+        elif identificacion > nodo_actual.datos['identificacion']:
+            nodo_actual.derecha = self._eliminar_recursivo_por_identificacion(nodo_actual.derecha, identificacion)
         else:
             # Caso 1: Nodo hoja o caso 2: Nodo con un hijo
             if not nodo_actual.izquierda:
@@ -70,7 +69,7 @@ class ArbolBinarioBusqueda:
             # Caso 3: Nodo con dos hijos
             sucesor = self.encontrar_minimo(nodo_actual.derecha)
             nodo_actual.datos = sucesor.datos
-            nodo_actual.derecha = self._eliminar_recursivo_por_clave(nodo_actual.derecha, sucesor.datos['k'])
+            nodo_actual.derecha = self._eliminar_recursivo_por_identificacion(nodo_actual.derecha, sucesor.datos['identificacion'])
 
         return nodo_actual
 
@@ -96,23 +95,13 @@ class ArbolBinarioBusqueda:
         minimo = self.encontrar_minimo(self.raiz)
         return minimo.datos if minimo else None
 
-    '''def mostrar_arbol(self):
-        self._mostrar_arbol_recursivo(self.raiz, "", False)
-
-    def _mostrar_arbol_recursivo(self, nodo, prefijo, es_ultimo):
-        if nodo is not None:
-            print(prefijo + ("└── " if es_ultimo else "├── ") + f"{nodo.datos['nombre']}")
-            nuevo_prefijo = prefijo + ("    " if es_ultimo else "│   ")
-            self._mostrar_arbol_recursivo(nodo.derecha, nuevo_prefijo, False)
-            self._mostrar_arbol_recursivo(nodo.izquierda, nuevo_prefijo, True)'''
-
     def mostrar_arbol(self):
         self._mostrar_arbol_recursivo(self.raiz, 0)
-    
+
     def _mostrar_arbol_recursivo(self, nodo, nivel):
         if nodo is not None:
             self._mostrar_arbol_recursivo(nodo.derecha, nivel + 1)
-            print("\t" * nivel + f"├───{nodo.datos['nombre']}")
+            print("   " * nivel + f"{nodo.datos['nombre']}")
             self._mostrar_arbol_recursivo(nodo.izquierda, nivel + 1)
 
 
@@ -128,7 +117,7 @@ if __name__ == "__main__":
 
 
     while True:
-        opcion = input("\nMENÚ\n"
+        opcion = input("\nIngrese la opción\n"
                        "'a' para agregar\n"
                        "'e' para eliminar\n"
                        "'b' para buscar\n"
@@ -136,9 +125,7 @@ if __name__ == "__main__":
                        "'n' para valor mínimo\n"
                        "'d' para mostrar árbol\n"
                        "'i' para mostrar recorrido inorder\n"
-                       "'s' para salir\n"
-                       "Ingrese una opción: "
-                       )
+                       "'s' para salir\n")
 
         if opcion.lower() == 's':
             break
@@ -180,3 +167,6 @@ if __name__ == "__main__":
             arbol.inorder()
         else:
             print("Opción no válida. Inténtelo de nuevo.")
+
+    print("\nRecorrido inorder del árbol:")
+    arbol.inorder()
